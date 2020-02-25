@@ -1,0 +1,57 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: rgb(250, 250, 250);
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/39/Lambda_lc.svg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: 100% 100%;
+}
+
+#index-body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 40vw;
+    padding: 2.625rem 1.3125rem;
+    border-left: solid;
+    height: 100%;
+}
+
+h1, h3 {
+    font-family: 'Special Elite';
+}
+
+small {
+    font-size: 1rem;
+    font-family: 'Open Sans';
+    margin-left: 1px;
+    font-style: italic;
+}
+
+article {
+    margin-top: 50px;
+}
+
+article > p {
+    font-size: 1.25rem;
+    font-family: 'Open Sans';
+}
+
+h1 {
+    font-size: 3rem;
+    letter-spacing: 10;
+    text-decoration: underline;
+    font-weight: normal;
+    font-style: italic;
+    white-space: nowrap;
+    margin-bottom: 70px;
+}
+
+h3 {
+    font-size: 2rem;
+    margin-bottom: 0.4375rem;
+    color: #13C15F;
+}
