@@ -14,7 +14,10 @@ class GeneratorService {
         console.log(`${file} deleted.`);
       } catch (e) {
         // exception thrown attempting to delete folder.
-        rimraf(`${path}${file}`, () => console.log(`${path}${file} deleted.`));
+        // if it's the assets folder, delete it.
+        if (file === "assets") {
+          rimraf(`${path}${file}`, () => console.log(`${path}${file} deleted.`));
+        }
       }
     }));
   }
