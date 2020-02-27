@@ -19,9 +19,10 @@ body {
     padding: 2.625rem 1.3125rem;
     border-left: solid;
     border-color: #2e2e2e;
-    border-width: 5px;
+    border-width: 4px;
     min-height: -webkit-fill-available;
     min-width: 750px;
+    max-width: 830px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -39,9 +40,10 @@ p {
     margin-bottom: 0px;
 }
 
-#blog-title > a {
-    color: black;
+#post-details {
+    margin-top: 25px;
 }
+
 
 small {
     font-size: 1rem;
@@ -49,7 +51,6 @@ small {
     margin-left: 1px;
     font-style: italic;
 }
-
 
 article {
     margin-top: 60px;
@@ -66,9 +67,28 @@ article > p {
     text-decoration: underline;
     font-weight: normal;
     font-style: italic;
-    margin-bottom: 70px;
+    margin-bottom: 30px;
     color: #2e2e2e;
     margin-top: 0;
+    height: 70px;
+}
+
+hr {
+    margin-bottom: 30px;
+}
+
+#blog-title > a {
+    color: black;
+}
+
+#blog-title > .en {
+    float: left;
+    position: relative;
+    bottom: -9px;
+}
+
+#blog-title > .jp {
+    float: right;
 }
 
 article > header > h3 > a {
@@ -81,6 +101,23 @@ article > header > h3 {
     color: #13C15F;
 }
 
+#about-me {
+    clear: both;
+    padding: 15px;
+    border: solid;
+    border-radius: 10px;
+    border-width: 2px;
+    display: flex;
+    border-left-width: 10px;
+}
+
+#about-me > img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
 @media only screen and (max-width: 810px) {
     #index-body {
         width: 100%;
@@ -90,5 +127,18 @@ article > header > h3 {
 
     body {
         background-image: none;
+    }
+
+    #blog-title {
+        display: table;
+    }
+
+    #blog-title > .en  {
+        float: none;
+        bottom: initial;
+    }
+
+    #blog-title > .jp  {
+        float: none;
     }
 }
