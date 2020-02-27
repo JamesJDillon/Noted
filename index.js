@@ -27,16 +27,14 @@ class Generator {
       list: (args) => this.list(args),
       build: (args) => this.build(args),
       add: (args) => this.add(args),
-      help: (args) => this.help(args),
+      help: (args) => Generator.help(args),
     };
 
     this.configService = new ConfigService();
-    this.generatorService = new GeneratorService();
-
     this.configObj = await this.configService.getConfigObj();
 
     const [first, second, ...tail] = args;
-    const action = this.parseArguments(tail);
+    const action = Generator.parseArguments(tail);
     this.evalArguments(action);
   }
 
@@ -74,7 +72,7 @@ class Generator {
     } = this.configObj;
 
     // delete the contents of the output directory.
-    await this.generatorService.deleteOldFiles(outputDir);
+    await GeneratorService.deleteOldFiles(outputDir);
 
     // create a list of the post objects.
     const posts = await GeneratorService.getPosts(templateDir, markdownDir);
@@ -86,7 +84,7 @@ class Generator {
     await GeneratorService.generateIndex(posts, templateDir, outputDir);
 
     // copy the asset files from the template directory
-    await this.generatorService.copy(`${templateDir}assets`, `${outputDir}assets`);
+    await GeneratorService.copy(`${templateDir}assets`, `${outputDir}assets`);
 
     if (flag === '--open') await open(`${outputDir}index.html`);
   }
@@ -110,12 +108,12 @@ class Generator {
     }
   }
 
-  async help() {
+  static async help() {
     const help = await fs.readFile('./help.txt', 'utf8');
     console.log(help);
   }
 
-  parseArguments(args) {
+  static parseArguments(args) {
     if (args.length === 0) throw Error('Arguments required.');
 
     const [first, second] = args;
@@ -130,7 +128,7 @@ class Generator {
 
     const action = this.methods[args.action];
     if (action === undefined) throw Error('Invalid argument.');
-    return await action(args.arguments);
+    return action(args.arguments);
   }
 }
 
