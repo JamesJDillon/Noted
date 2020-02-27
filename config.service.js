@@ -28,9 +28,9 @@ class ConfigService {
     });
 
     const temp = {
-      templateDir: await ConfigService.ask(rl, "Template directory", templateDir),
-      outputDir: await ConfigService.ask(rl, "Output directory", outputDir),
-      markdownDir: await ConfigService.ask(rl, "Markdown directory", markdownDir),
+      templateDir: await ConfigService.ask(rl, 'Template directory', templateDir),
+      outputDir: await ConfigService.ask(rl, 'Output directory', outputDir),
+      markdownDir: await ConfigService.ask(rl, 'Markdown directory', markdownDir),
     };
 
     rl.close();
