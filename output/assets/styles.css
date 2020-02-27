@@ -9,21 +9,38 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: 100% 100%;
+    background-size: 20%;
 }
 
 #index-body {
     margin-left: auto;
     margin-right: auto;
-    width: 40vw;
+    width: 50vw;
     padding: 2.625rem 1.3125rem;
     border-left: solid;
     border-color: #2e2e2e;
     border-width: 5px;
     min-height: -webkit-fill-available;
+    min-width: 750px;
 }
 
-h1, h3 {
+h1, h2, h3, h4, h5 {
     font-family: 'Special Elite';
+    color: #13C15F;
+}
+
+p {
+    font-family: 'Open Sans';
+}
+
+#post-details > #post-title {
+    color: #a166ba;
+    font-size: 2.5rem;
+    margin-bottom: 0px;
+}
+
+#blog-title > a {
+    color: black;
 }
 
 small {
@@ -49,7 +66,6 @@ article > p {
     text-decoration: underline;
     font-weight: normal;
     font-style: italic;
-    white-space: nowrap;
     margin-bottom: 70px;
     color: #2e2e2e;
     margin-top: 0;
@@ -63,4 +79,16 @@ article > header > h3 {
     font-size: 2rem;
     margin-bottom: 0.4375rem;
     color: #13C15F;
+}
+
+@media only screen and (max-width: 810px) {
+    #index-body {
+        width: 100%;
+        min-width: initial;
+        border: none;
+    }
+
+    body {
+        background-image: none;
+    }
 }

@@ -28,17 +28,23 @@ class Generator {
   }
 
   static async list(args, config) {
-    console.log('[Markdown files]');
     const markdownFiles = await fs.readdir(config.markdownDir);
+    const htmlFiles = await fs.readdir(config.outputDir);
+
+    console.log('[Markdown files]');
     markdownFiles.forEach((file) => {
       const ext = file.substring(file.length, file.length - 3);
+      const name = file.substring(0, file.length - 3);
       if (ext === '.md') {
-        console.log(file);
+        if (htmlFiles.includes(`${name}.html`)) {
+          console.log(`${file} => ${name}.html`);
+        } else {
+          console.log(`${file} => ???`);
+        }
       }
     });
 
-    console.log('[HTML files]');
-    const htmlFiles = await fs.readdir(config.outputDir);
+    console.log('\n[HTML files]');
     htmlFiles.forEach((file) => {
       const ext = file.substring(file.length, file.length - 5);
       if (ext === '.html') {
