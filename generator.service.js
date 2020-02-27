@@ -5,13 +5,13 @@ const rimraf = require('rimraf');
 const path = require('path');
 
 /**
-  * An object containing details relevant to posts. 
+  * An object containing details relevant to posts.
   * @typedef Details
   * @type {object}
   * @property {string} title - title of the post.
   * @property {number} desc  - description of the post.
   * @property {number} date  - date of post.
-  * 
+  *
 */
 
 /**
@@ -21,11 +21,10 @@ const path = require('path');
   * @property {Details} details  - details about the post.
   * @property {string} bodyText  - markdown file as string.
   * @property {string} bodyHtml  - markdown file converted to HTML.
-  * 
+  *
 */
 
 class GeneratorService {
-
   /**
    * Takes a path - deletes every file within said path.
    * Deletes the "assets" folder within the path if it contains it.
@@ -34,16 +33,16 @@ class GeneratorService {
    * @returns {void} side effects of deleting files are carried out.
   */
   async deleteOldFiles(path) {
-    console.log('[DELETING OLD FILES]')
+    console.log('[DELETING OLD FILES]');
     const htmlFiles = await fs.readdir(path);
-    await Promise.all(htmlFiles.map(async file => {
+    await Promise.all(htmlFiles.map(async (file) => {
       try {
         await fs.unlink(`${path}${file}`);
         console.log(`${file} deleted.`);
       } catch (e) {
         // exception thrown attempting to delete folder.
         // if it's the assets folder, delete it.
-        if (file === "assets") {
+        if (file === 'assets') {
           rimraf(`${path}${file}`, () => console.log(`${path}${file} deleted.`));
         }
       }
@@ -82,34 +81,31 @@ class GeneratorService {
       await fs.mkdir(dest);
       const fileList = await fs.readdir(src);
 
-      await Promise.all(fileList.map(async childItemName => {
-        return this.copyRecursive(path.join(src, childItemName), path.join(dest, childItemName));
-      }));
+      await Promise.all(fileList.map(async (childItemName) => this.copyRecursive(path.join(src, childItemName), path.join(dest, childItemName))));
     }
-  };
-
+  }
 
   /**
    * Creates a list of blog post objects.
    * @todo    Need to handle all the error cases that could possibly happen.
-   * 
+   *
    * @param   {string} templateDir that contains the html templates.
    * @param   {string} markdownDir that contains the markdown files.
-   * 
+   *
    * @returns {Post[]} a list of objects representing posts to the blog.
   */
-  async getPosts(templateDir, markdownDir) {
+  static async getPosts(templateDir, markdownDir) {
     const converter = new showdown.Converter();
-    //TODO: Handle exception.
+    // TODO: Handle exception.
     const postFiles = await fs.readdir(markdownDir);
     const template = await fs.readFile(`${templateDir}post.html`, 'utf8');
 
-    const posts = await Promise.all(postFiles.map(async post=> {
-      //TODO: Handle exception.
+    const posts = await Promise.all(postFiles.map(async (post) => {
+      // TODO: Handle exception.
       const openPost = await fs.readFile(`${markdownDir}${post}`, 'utf8');
-      const postMetadata = this.getPostMetadata(openPost);
+      const postMetadata = GeneratorService.getPostMetadata(openPost);
 
-      const body = this.getPostBody(openPost);
+      const body = GeneratorService.getPostBody(openPost);
 
       const preparedTemplate = template
         .replace('${body}', converter.makeHtml(body))
@@ -133,15 +129,14 @@ class GeneratorService {
   }
 
   /**
-   * Recursive function that copies the contents of one directory
-   * to another directory.
+   * Takes a markdown file and parses the first 5 lines for metadata.
    * @param   {string} post - a markdown file as a string
    *
-   * @returns {Description} description - an object containing data describing a post. 
+   * @returns {Description} description - an object containing data describing a post.
   */
-  getPostMetadata(post) {
+  static getPostMetadata(post) {
     const lines = post.split('\n');
-    if (lines[0] !== "----" || lines[4] !== "----") {
+    if (lines[0] !== '----' || lines[4] !== '----') {
       throw Error('Incorrect post format.');
     }
 
@@ -149,20 +144,26 @@ class GeneratorService {
 
     const title = lines[2].split('title: ')[1];
     const desc = lines[3].split('desc: ')[1];
-    const date = moment(tempDate, "DD/MM/YYYY HH:mm");
+    const date = moment(tempDate, 'DD/MM/YYYY HH:mm');
 
     return { date, title, desc };
   }
 
-  getPostBody(post) {
+  /**
+   * Takes a markdown file and removes the metadata lines at the beginning.
+   * @param   {string} post - a markdown file as a string
+   *
+   * @returns {string} postBody - a string containing the body of a blog post.
+  */
+  static getPostBody(post) {
     const lines = post.split('\n');
     const body = lines.splice(5, lines.length - 1);
     return body.join('\n');
   }
 
-  async generatePosts(posts, outputDir) {
-    console.log('[GENERATING BLOG POSTS]')
-    await Promise.all(posts.map(async post => {
+  static async generatePosts(posts, outputDir) {
+    console.log('[GENERATING BLOG POSTS]');
+    await Promise.all(posts.map(async (post) => {
       try {
         await fs.writeFile(`${outputDir}${post.details.name}.html`, post.bodyHtml);
         console.log(`${outputDir}${post.details.name}.html created.`);
@@ -172,9 +173,9 @@ class GeneratorService {
     }));
   }
 
-  async generateIndex(posts, templateDir, outputDir)  {
-    console.log('[GENERATING INDEX PAGE]')
-    const indexPostList = this.buildPostList(posts);
+  static async generateIndex(posts, templateDir, outputDir) {
+    console.log('[GENERATING INDEX PAGE]');
+    const indexPostList = GeneratorService.buildPostList(posts);
     const template = await fs.readFile(`${templateDir}index.html`, 'utf8');
     const hydratedTemplate = template
       .replace('${postList}', indexPostList);
@@ -182,20 +183,18 @@ class GeneratorService {
     console.log(`${outputDir}index.html created.`);
   }
 
-  buildPostList(posts) {
-    const postHtml = posts.map(post => {
-      return `
+  static buildPostList(posts) {
+    const postHtml = posts.map((post) => `
         <article>
           <header>
             <h3><a href="${post.details.name}.html">${post.details.name}</a></h3>
-            <small>${post.details.date.format("dddd, MMMM Do YYYY, h:mm")}</small>
+            <small>${post.details.date.format('dddd, MMMM Do YYYY, h:mm')}</small>
           </header>
           <p>
             ${post.details.desc}
           </p>
         </article>
-      `;
-    });
+      `);
 
     return postHtml.join('\n');
   }

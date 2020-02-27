@@ -1,4 +1,4 @@
-/* 
+/*
   Algorithm:
   1. Check if config file exists.
     1.1 If it doesn't exist, walk user through building it.
@@ -23,14 +23,14 @@ const GeneratorService = require('./generator.service');
 class Generator {
   async init(args) {
     this.methods = {
-      'config': (args) => this.config(args),
-      'list':   (args) => this.list(args),
-      'build':  (args) => this.build(args),
-      'add':    (args) => this.add(args),
-      'help':   (args) => this.help(args),
+      config: (args) => this.config(args),
+      list: (args) => this.list(args),
+      build: (args) => this.build(args),
+      add: (args) => this.add(args),
+      help: (args) => this.help(args),
     };
 
-    this.configService    = new ConfigService();
+    this.configService = new ConfigService();
     this.generatorService = new GeneratorService();
 
     this.configObj = await this.configService.getConfigObj();
@@ -46,18 +46,18 @@ class Generator {
   }
 
   async list() {
-    console.log("[Markdown files]");
+    console.log('[Markdown files]');
     const markdownFiles = await fs.readdir(this.configObj.markdownDir);
-    markdownFiles.forEach(file => {
+    markdownFiles.forEach((file) => {
       const ext = file.substring(file.length, file.length - 3);
       if (ext === '.md') {
         console.log(file);
       }
     });
 
-    console.log("[HTML files]");
+    console.log('[HTML files]');
     const htmlFiles = await fs.readdir(this.configObj.outputDir);
-    htmlFiles.forEach(file => {
+    htmlFiles.forEach((file) => {
       const ext = file.substring(file.length, file.length - 5);
       if (ext === '.html') {
         console.log(file);
@@ -77,13 +77,13 @@ class Generator {
     await this.generatorService.deleteOldFiles(outputDir);
 
     // create a list of the post objects.
-    const posts = await this.generatorService.getPosts(templateDir, markdownDir);
-    
+    const posts = await GeneratorService.getPosts(templateDir, markdownDir);
+
     // create the individual blog html files from the list of objects.
-    await this.generatorService.generatePosts(posts, outputDir);
+    await GeneratorService.generatePosts(posts, outputDir);
 
     // create and save the index page.
-    await this.generatorService.generateIndex(posts, templateDir, outputDir);
+    await GeneratorService.generateIndex(posts, templateDir, outputDir);
 
     // copy the asset files from the template directory
     await this.generatorService.copy(`${templateDir}assets`, `${outputDir}assets`);
@@ -100,13 +100,13 @@ class Generator {
       try {
         await fs.rename(file, dest);
         console.log(`${file} => ${dest}`);
-        console.log("Move complete.");
+        console.log('Move complete.');
       } catch (e) {
         console.log('Could not move file.');
-        console.log("ERROR ", e);
+        console.log('ERROR ', e);
       }
     } catch (e) {
-      console.log("ERROR ", e);
+      console.log('ERROR ', e);
     }
   }
 
@@ -121,7 +121,7 @@ class Generator {
     const [first, second] = args;
     return {
       action: first,
-      arguments: [second]
+      arguments: [second],
     };
   }
 
