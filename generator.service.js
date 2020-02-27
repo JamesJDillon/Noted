@@ -4,7 +4,35 @@ const moment = require('moment');
 const rimraf = require('rimraf');
 const path = require('path');
 
+/**
+  * An object containing details relevant to posts. 
+  * @typedef Details
+  * @type {object}
+  * @property {string} title - title of the post.
+  * @property {number} desc  - description of the post.
+  * @property {number} date  - date of post.
+  * 
+*/
+
+/**
+  * A post object.
+  * @typedef Post
+  * @type {object}
+  * @property {Details} details  - details about the post.
+  * @property {string} bodyText  - markdown file as string.
+  * @property {string} bodyHtml  - markdown file converted to HTML.
+  * 
+*/
+
 class GeneratorService {
+
+  /**
+   * Takes a path - deletes every file within said path.
+   * Deletes the "assets" folder within the path if it contains it.
+   * @param   {path} path to the folder we're clearing.
+   *
+   * @returns {void} side effects of deleting files are carried out.
+  */
   async deleteOldFiles(path) {
     console.log('[DELETING OLD FILES]')
     const htmlFiles = await fs.readdir(path);
@@ -22,28 +50,54 @@ class GeneratorService {
     }));
   }
 
+  /**
+   * Wraps the 'copyRecursive' method so we can print out to the user
+   * just once that we're moving the assets folder over.
+   * @param   {string} src to folder we're moving
+   * @param   {string} dest to the destination the folder should be moved to.
+   *
+   * @returns {Promise} side effects of deleting files are carried out.
+  */
   copy(src, dest) {
     console.log('[COPYING ASSET FILES]');
     return this.copyRecursive(src, dest);
   }
 
+  /**
+   * Recursive function that copies the contents of one directory
+   * to another directory.
+   * @todo    Need to handle all the error cases that could possibly happen.
+   * @param   {string} src to folder we're moving
+   * @param   {string} dest to the destination the folder should be moved to.
+   *
+   * @returns {Promise} with side effects of moving a directory and it's contents.
+  */
   async copyRecursive(src, dest) {
     const stats = await fs.stat(src);
     const isDirectory = stats.isDirectory();
-    if (isDirectory) {
-      await fs.mkdir(dest);
-      const list = await fs.readdir(src);
-
-      list.forEach(async childItemName => {
-        await this.copyRecursive(path.join(src, childItemName), path.join(dest, childItemName));
-      });
-    } else {
-      // base case - copy the file over.
+    if (!isDirectory) {
       console.log(`${src} => ${dest}`);
       await fs.copyFile(src, dest);
+    } else {
+      await fs.mkdir(dest);
+      const fileList = await fs.readdir(src);
+
+      await Promise.all(fileList.map(async childItemName => {
+        return this.copyRecursive(path.join(src, childItemName), path.join(dest, childItemName));
+      }));
     }
   };
 
+
+  /**
+   * Creates a list of blog post objects.
+   * @todo    Need to handle all the error cases that could possibly happen.
+   * 
+   * @param   {string} templateDir that contains the html templates.
+   * @param   {string} markdownDir that contains the markdown files.
+   * 
+   * @returns {Post[]} a list of objects representing posts to the blog.
+  */
   async getPosts(templateDir, markdownDir) {
     const converter = new showdown.Converter();
     //TODO: Handle exception.
@@ -78,6 +132,13 @@ class GeneratorService {
     return posts;
   }
 
+  /**
+   * Recursive function that copies the contents of one directory
+   * to another directory.
+   * @param   {string} post - a markdown file as a string
+   *
+   * @returns {Description} description - an object containing data describing a post. 
+  */
   getPostMetadata(post) {
     const lines = post.split('\n');
     if (lines[0] !== "----" || lines[4] !== "----") {
