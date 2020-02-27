@@ -1,22 +1,17 @@
 {
-  "name": "markdown-blog",
+  "name": "markdown_blog",
   "version": "0.0.1",
-  "description": "Small tool for generating static blog pages from markdown.",
+  "description": "Simple static site generator for a blog.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^2.0.2"
-  },
+  "license": "MIT",
   "dependencies": {
-    "colors": "^1.4.0",
     "moment": "^2.24.0",
-    "pretty": "^2.0.0",
+    "open": "^7.0.2",
+    "rimraf": "^3.0.2",
     "showdown": "^1.9.1"
   }
 }
