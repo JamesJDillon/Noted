@@ -1,18 +1,3 @@
-/*
-  Algorithm:
-  1. Check if config file exists.
-    1.1 If it doesn't exist, walk user through building it.
-      1.1.2 (template directory, output directory, markdown files directory)
-    1.2 If it does exist, proceed.
-  2. Parse command line arguments.
-  3. Execute command line arguments.
-    3.1 [config]              => view/update the config.
-    3.2 [list]                => list markdown files, lists generated equivalents.
-    3.3 [build]               => generate the site.
-    3.4 [add [filename.md]]   => moves file to the template directory
-    3.5 [help | usage]        => prints help or usage information.
-*/
-
 const fs = require('fs').promises;
 const path = require('path');
 const open = require('open');
@@ -22,30 +7,29 @@ const GeneratorService = require('./generator.service');
 
 class Generator {
   async init(args) {
-    this.methods = {
-      config: (args) => this.config(args),
-      list: (args) => this.list(args),
-      build: (args) => this.build(args),
-      add: (args) => this.add(args),
-      help: (args) => Generator.help(args),
-    };
+    const config = await ConfigService.getConfig();
 
-    this.configService = new ConfigService();
-    this.configObj = await this.configService.getConfigObj();
+    const methods = {
+      config: (args) => Generator.config(args, config),
+      list: (args) => Generator.list(args, config),
+      build: (args) => Generator.build(args, config),
+      add: (args) => Generator.add(args, config),
+      help: (args) => Generator.help(args, config),
+    };
 
     const [first, second, ...tail] = args;
     const action = Generator.parseArguments(tail);
-    this.evalArguments(action);
+    this.evalArguments(action, config, methods);
   }
 
-  async config() {
-    const newConfig = await this.configService.getConfigValues(this.configObj);
+  static async config(args, config) {
+    const newConfig = await ConfigService.getConfigValues(config);
     await fs.writeFile('./config.json', JSON.stringify(newConfig));
   }
 
-  async list() {
+  static async list(args, config) {
     console.log('[Markdown files]');
-    const markdownFiles = await fs.readdir(this.configObj.markdownDir);
+    const markdownFiles = await fs.readdir(config.markdownDir);
     markdownFiles.forEach((file) => {
       const ext = file.substring(file.length, file.length - 3);
       if (ext === '.md') {
@@ -54,7 +38,7 @@ class Generator {
     });
 
     console.log('[HTML files]');
-    const htmlFiles = await fs.readdir(this.configObj.outputDir);
+    const htmlFiles = await fs.readdir(config.outputDir);
     htmlFiles.forEach((file) => {
       const ext = file.substring(file.length, file.length - 5);
       if (ext === '.html') {
@@ -63,13 +47,8 @@ class Generator {
     });
   }
 
-  async build(args) {
+  static async build(args, { outputDir, templateDir, markdownDir }) {
     const [flag] = args;
-    const {
-      outputDir,
-      templateDir,
-      markdownDir,
-    } = this.configObj;
 
     // delete the contents of the output directory.
     await GeneratorService.deleteOldFiles(outputDir);
@@ -89,11 +68,11 @@ class Generator {
     if (flag === '--open') await open(`${outputDir}index.html`);
   }
 
-  async add(args) {
+  static async add(args, config) {
     try {
       const [file] = args;
       const fileName = path.basename(file);
-      const dest = path.join(this.configObj.markdownDir, fileName);
+      const dest = path.join(config.markdownDir, fileName);
 
       try {
         await fs.rename(file, dest);
@@ -123,10 +102,10 @@ class Generator {
     };
   }
 
-  async evalArguments(args) {
-    if (this.configObj === {}) await this.config();
+  async evalArguments(args, config, methods) {
+    if (config === {}) await this.config();
 
-    const action = this.methods[args.action];
+    const action = methods[args.action];
     if (action === undefined) throw Error('Invalid argument.');
     return action(args.arguments);
   }
