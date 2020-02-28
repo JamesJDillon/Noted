@@ -110,6 +110,7 @@ class GeneratorService {
 
         const preparedTemplate = template
           .replace('${body}', converter.makeHtml(body))
+          .replace('${pageTitle}', postMetadata.title)
           .replace('${title}', postMetadata.title)
           .replace('${desc}', postMetadata.desc)
           .replace(
@@ -206,8 +207,8 @@ class GeneratorService {
       (post) => `
         <article>
           <header>
-            <h3><a href="${post.details.name}.html">${post.details.name}</a></h3>
-            <small>${post.details.date.format('dddd, MMMM Do YYYY, h:mm')}</small>
+            <h3><a href="${post.details.name}.html">${post.details.title}</a></h3>
+            <small>${post.details.date.format('dddd, MMMM Do YYYY')}</small>
           </header>
           <p>
             ${post.details.desc}

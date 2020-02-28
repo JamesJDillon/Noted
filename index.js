@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const open = require('open');
+const moment = require('moment');
 
 const ConfigService = require('./config.service');
 const GeneratorService = require('./generator.service');
@@ -15,6 +16,7 @@ class Generator {
       build: (args) => Generator.build(args, config),
       add: (args) => Generator.add(args, config),
       help: (args) => Generator.help(args, config),
+      create: (args) => Generator.create(args, config),
     };
 
     const [first, second, ...tail] = args;
@@ -115,7 +117,16 @@ class Generator {
     if (action === undefined) throw Error('Invalid argument.');
     return action(args.arguments);
   }
+
+  static async create(args, config) {
+    const [file] = args;
+    const postTemplate = await fs.readFile('./templates/markdown.template', 'utf8');
+
+    await fs.writeFile(
+      file,
+      postTemplate.replace('{date}', moment().format('DD/MM/YYYY HH:mm')),
+    );
+  }
 }
 
-const generator = new Generator();
-generator.init(process.argv);
+module.exports = Generator;
