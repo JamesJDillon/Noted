@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const readline = require('readline');
+const { console } = require('./logger.service');
 
 class ConfigService {
   static async getConfig(path) {

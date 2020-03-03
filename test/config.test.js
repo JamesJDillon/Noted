@@ -3,7 +3,7 @@ const readline = require('readline');
 const ConfigService = require('../config.service');
 
 describe('Config Service', () => {
-  describe('#getConfig(path)', () => {
+  describe('#getConfig', () => {
     it('should return an empty object when path is invalid', async () => {
       const result = await ConfigService.getConfig('./nothinghere');
       assert.deepEqual(result, {});
@@ -25,7 +25,7 @@ describe('Config Service', () => {
     });
   });
 
-  describe('Config Input', () => {
+  describe('#ask, #getConfigValue', () => {
     let stdin;
     let rl;
     beforeEach(() => {

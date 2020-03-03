@@ -4,7 +4,7 @@
   "description": "Simple static site generator for a blog.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "ENV=TEST ./node_modules/mocha/bin/mocha"
   },
   "author": "",
   "license": "MIT",

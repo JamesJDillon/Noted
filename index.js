@@ -5,6 +5,7 @@ const moment = require('moment');
 
 const ConfigService = require('./config.service');
 const GeneratorService = require('./generator.service');
+const { console } = require('./logger.service');
 
 class Generator {
   async init(args) {
