@@ -8,7 +8,7 @@ const GeneratorService = require('./generator.service');
 
 class Generator {
   async init(args) {
-    const config = await ConfigService.getConfig();
+    const config = await ConfigService.getConfig('./config.json');
 
     const methods = {
       config: (args) => Generator.config(args, config),

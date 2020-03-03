@@ -2,21 +2,15 @@ const fs = require('fs').promises;
 const readline = require('readline');
 
 class ConfigService {
-  static async getConfig() {
+  static async getConfig(path) {
     try {
-      return JSON.parse(await fs.readFile('./config.json', 'utf8'));
+      const config = JSON.parse(await fs.readFile(path, 'utf8'));
+      const isValid = ('templateDir' in config) && ('outputDir' in config)
+        && ('markdownDir' in config);
+
+      return isValid ? config : {};
     } catch (e) {
       return {};
-    }
-  }
-
-  static async configExists() {
-    try {
-      await fs.readFile('./config.json', 'utf8');
-      return true;
-    } catch (e) {
-      if (e.code === 'ENOENT') return false;
-      return true;
     }
   }
 
@@ -41,7 +35,6 @@ class ConfigService {
     console.log(`${question} (${existing || ''}): `);
     return new Promise(res => {
       readline.on('line', (line) => {
-        // If nothing is entered, default to the existing value.
         res(line === '' ? existing : line);
       });
     });
