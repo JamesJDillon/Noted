@@ -9,7 +9,8 @@ const { console } = require('./logger.service');
 
 class Generator {
   async init(args) {
-    const config = await ConfigService.getConfig('./config.json');
+    const config = await ConfigService.getConfig(`${path.resolve(__dirname)}/config.json`);
+    //if (config === {}) await this.config();
 
     const methods = {
       config: (args) => Generator.config(args, config),
@@ -27,7 +28,7 @@ class Generator {
 
   static async config(args, config) {
     const newConfig = await ConfigService.getConfigValues(config);
-    await fs.writeFile('./config.json', JSON.stringify(newConfig));
+    await fs.writeFile(`${path.resolve(__dirname)}/config.json`, JSON.stringify(newConfig));
   }
 
   static async list(args, config) {
@@ -97,7 +98,7 @@ class Generator {
   }
 
   static async help() {
-    const help = await fs.readFile('./help.txt', 'utf8');
+    const help = await fs.readFile(`${path.resolve(__dirname)}/help.txt`, 'utf8');
     console.log(help);
   }
 
@@ -121,7 +122,7 @@ class Generator {
 
   static async create(args, config) {
     const [file] = args;
-    const postTemplate = await fs.readFile('./templates/markdown.template', 'utf8');
+    const postTemplate = await fs.readFile(`${path.resolve(__dirname)}/markdown.template`, 'utf8');
 
     await fs.writeFile(
       file,
