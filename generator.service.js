@@ -193,6 +193,14 @@ class GeneratorService {
     );
   }
 
+  /**
+    * Generates the index page.
+    * @param   {Post[]} posts     - list of post objects to generate the index page list from.
+    * @param   {string} templateDir - directory that contains the template files.
+    * @param   {string} outputDir - directory to output the generated files to.
+    *
+    * @returns {Promise} async    - side effects of generating the index file.
+  */
   static async generateIndex(posts, templateDir, outputDir) {
     console.log('[GENERATING INDEX PAGE]');
     const indexPostList = GeneratorService.buildPostList(posts);
@@ -202,6 +210,13 @@ class GeneratorService {
     console.log(`${outputDir}index.html created.`);
   }
 
+  /**
+    * Generates the index page.
+    * @todo    Refactor this to use it's own post template.
+    * @param   {Post[]} posts  - list of post objects to generate the list of posts from.
+    *
+    * @returns {string} posts  - a string containing the HTML of the list of blog posts.
+  */
   static buildPostList(posts) {
     const postHtml = posts.map(
       (post) => `
