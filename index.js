@@ -22,8 +22,12 @@ class Generator {
     };
 
     const [first, second, ...tail] = args;
-    const action = Generator.parseArguments(tail);
-    this.evalArguments(action, config, methods);
+    try {
+      const action = Generator.parseArguments(tail);
+      this.evalArguments(action, config, methods);
+    } catch (e) {
+      console.log("Invalid usage. Try noted --help for more information.");
+    }
   }
 
   static async config(args, config) {

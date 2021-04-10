@@ -1,8 +1,11 @@
 const fs = require('fs').promises;
+const minify = require('html-minifier').minify;
 const showdown = require('showdown');
 const moment = require('moment');
 const rimraf = require('rimraf');
 const path = require('path');
+
+const minifyConfig = require('./minifyConfig');
 
 class GeneratorService {
   /**
@@ -103,7 +106,12 @@ class GeneratorService {
     const posts = await Promise.all(
       postFiles.map(async (post) => {
         // TODO: Handle exception.
-        const openPost = await fs.readFile(`${markdownDir}${post}`, 'utf8');
+        let openPost;
+        try {
+          openPost = await fs.readFile(`${markdownDir}${post}`, 'utf8');
+        } catch (e) {
+          console.log(e);
+        }
         const postMetadata = GeneratorService.getPostMetadata(openPost);
 
         const body = GeneratorService.getPostBody(openPost);
@@ -115,7 +123,7 @@ class GeneratorService {
           .replace('${desc}', postMetadata.desc)
           .replace(
             '${date}',
-            postMetadata.date.isValid() ? postMetadata.date : '[Invalid date]',
+            postMetadata.date.isValid() ? postMetadata.date.format('dddd, MMMM Do YYYY') : '[Invalid date]',
           );
 
         return {
@@ -131,6 +139,7 @@ class GeneratorService {
 
     // Sorting by date asc.
     posts.sort((a, b) => b.details.date - a.details.date);
+
     return posts;
   }
 
@@ -181,7 +190,7 @@ class GeneratorService {
         try {
           await fs.writeFile(
             `${outputDir}${post.details.name}.html`,
-            post.bodyHtml,
+            minify(post.bodyHtml, minifyConfig),
           );
           console.log(`${outputDir}${post.details.name}.html created.`);
         } catch (e) {
@@ -206,7 +215,8 @@ class GeneratorService {
     const indexPostList = GeneratorService.buildPostList(posts);
     const template = await fs.readFile(`${templateDir}index.html`, 'utf8');
     const hydratedTemplate = template.replace('${postList}', indexPostList);
-    await fs.writeFile(`${outputDir}index.html`, hydratedTemplate);
+    const minifiedPage = minify(hydratedTemplate, minifyConfig);
+    await fs.writeFile(`${outputDir}index.html`, minifiedPage);
     console.log(`${outputDir}index.html created.`);
   }
 
@@ -222,8 +232,8 @@ class GeneratorService {
       (post) => `
         <article>
           <header>
-            <h3><a href="${post.details.name}.html">${post.details.title}</a></h3>
-            <small>${post.details.date.format('dddd, MMMM Do YYYY')}</small>
+            <h1 class="post-title"><a href="${post.details.name}.html">${post.details.title}</a></h1>
+            <span class="post-date">${post.details.date.format('dddd, MMMM Do YYYY')}</span>
           </header>
           <p>
             ${post.details.desc}

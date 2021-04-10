@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "html-minifier": "^4.0.0",
     "mock-stdin": "^1.0.0",
     "moment": "^2.24.0",
     "open": "^7.0.2",
@@ -20,10 +21,10 @@
   },
   "preferGlobal": true,
   "devDependencies": {
+    "chai": "*",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
-    "mocha": "^7.1.0",
-    "chai": "*"
+    "mocha": "^7.1.0"
   }
 }
