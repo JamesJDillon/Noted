@@ -26,7 +26,8 @@ class Generator {
       const action = Generator.parseArguments(tail);
       this.evalArguments(action, config, methods);
     } catch (e) {
-      console.log("Invalid usage. Try noted --help for more information.");
+      console.log("error", e);
+      console.log("Invalid usage. Try 'noted help' for more information.");
     }
   }
 
