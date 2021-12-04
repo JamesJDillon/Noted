@@ -1,26 +1,26 @@
 const { assert, expect } = require('chai');
 const readline = require('readline');
-const ConfigService = require('../config.service');
+const { getConfig, getConfigValues, ask} = require('../config.service');
 
 describe('Config Service', () => {
   describe('#getConfig', () => {
     it('should return an empty object when path is invalid', async () => {
-      const result = await ConfigService.getConfig('./nothinghere');
+      const result = await getConfig('./nothinghere');
       assert.deepEqual(result, {});
     });
 
     it('should return an empty object when config file does not exist.', async () => {
-      const result = await ConfigService.getConfig('doesnotexist');
+      const result = await getConfig('doesnotexist');
       assert.deepEqual(result, {});
     });
 
     it('should return an empty object when config file is invalid.', async () => {
-      const result = await ConfigService.getConfig('./test/files/invalid-config.test.json');
+      const result = await getConfig('./test/files/invalid-config.test.json');
       assert.deepEqual(result, {});
     });
 
     it('should return a config object when the config is valid', async () => {
-      const result = await ConfigService.getConfig('./test/files/valid-config.test.json');
+      const result = await getConfig('./test/files/valid-config.test.json');
       expect(result).to.have.all.keys(['templateDir', 'outputDir', 'markdownDir']);
     });
   });
@@ -41,7 +41,7 @@ describe('Config Service', () => {
       const input = 'This is example input.';
       process.nextTick(() => stdin.send(`${input}\r`));
 
-      const resp = await ConfigService.ask(rl, '', 'default');
+      const resp = await ask(rl, '', 'default');
       assert.strictEqual(resp, input);
     });
 
@@ -49,7 +49,7 @@ describe('Config Service', () => {
       const input = '';
       process.nextTick(() => stdin.send(`${input}\r`));
 
-      const resp = await ConfigService.ask(rl, '', 'default');
+      const resp = await ask(rl, '', 'default');
       assert.strictEqual(resp, 'default');
     });
 
@@ -71,7 +71,7 @@ describe('Config Service', () => {
         stdin.send(`${input}\r`);
       });
 
-      const resp = await ConfigService.getConfigValues(config);
+      const resp = await getConfigValues(config);
 
       expect(resp).to.deep.equal({
         templateDir: 'test',
@@ -97,7 +97,7 @@ describe('Config Service', () => {
         stdin.send(input);
       });
 
-      const resp = await ConfigService.getConfigValues(config);
+      const resp = await getConfigValues(config);
 
       expect(resp).to.deep.equal(config);
     });
