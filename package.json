@@ -4,7 +4,7 @@
   "description": "Simple static site generator for a blog.",
   "main": "index.js",
   "scripts": {
-    "test": "ENV=TEST ./node_modules/mocha/bin/mocha"
+    "test": "node ./node_modules/mocha/bin/mocha"
   },
   "author": "",
   "license": "MIT",
@@ -17,14 +17,14 @@
     "showdown": "^1.9.1"
   },
   "bin": {
-    "noted": "./bin/global.sh"
+    "noted": "index.js"
   },
   "preferGlobal": true,
   "devDependencies": {
     "chai": "*",
-    "eslint": "^6.8.0",
+    "eslint": "^8.3.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
-    "mocha": "^7.1.0"
+    "mocha": "^9.1.3"
   }
 }

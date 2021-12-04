@@ -229,12 +229,13 @@ class GeneratorService {
   */
   static buildPostList(posts) {
     const postHtml = posts.map(
-      (post) => `
+      (post, i) => `
+        ${i !== 0 ? '<hr />' : ''}
         <article>
-          <header>
+          <div>
             <h1 class="post-title"><a href="${post.details.name}.html">${post.details.title}</a></h1>
             <span class="post-date">${post.details.date.format('dddd, MMMM Do YYYY')}</span>
-          </header>
+          </div>
           <p>
             ${post.details.desc}
           </p>

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('fs').promises;
 const path = require('path');
 const open = require('open');
@@ -136,4 +138,5 @@ class Generator {
   }
 }
 
-module.exports = Generator;
+const generator = new Generator();
+generator.init(process.argv);
