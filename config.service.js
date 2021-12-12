@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const readline = require('readline');
-const { console } = require('./logger.service');
+const { log, Colors } = require('./logger.service');
 
 
 /**
@@ -18,7 +18,7 @@ const getConfig = async (path) => {
 
     return isValid ? config : {};
   } catch (e) {
-    console.log(e);
+    log(e);
     return {};
   }
 }
@@ -63,7 +63,8 @@ const getConfigValues = async ({ templateDir, outputDir, markdownDir }) => {
 */
 
 const ask = (readline, question, existing) => {
-  console.log(`${question} (${existing || ''}): `);
+  log(`${question} (${existing || ''}): `);
+
   return new Promise(res => {
     readline.on('line', (line) => {
       res(line === '' ? existing : line);

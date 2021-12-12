@@ -6,6 +6,7 @@ const rimraf = require('rimraf');
 const path = require('path');
 
 const minifyConfig = require('./minifyConfig');
+const { log, Colors } = require('./logger.service');
 
 /**
   * Takes a path - deletes every file within said path.
@@ -15,18 +16,19 @@ const minifyConfig = require('./minifyConfig');
   * @returns {void} side effects of deleting files are carried out.
 */
 const deleteOldFiles = async (dir) => {
-  console.log('[DELETING OLD FILES]');
+  log('(Deleting Old Files)', Colors.FgMagenta);
   const htmlFiles = await fs.readdir(dir);
   await Promise.all(
     htmlFiles.map(async (file) => {
       try {
         await fs.unlink(`${dir}${file}`);
-        console.log(`${file} deleted.`);
+        log(`${file} deleted.`, Colors.FgRed);
       } catch (e) {
         // exception thrown attempting to delete folder.
         // if it's the assets folder, delete it.
         if (file === 'assets') {
-          rimraf(`${dir}${file}`, () => console.log(`${dir}${file} deleted.`));
+          rimraf.sync(`${dir}${file}`);
+          log(`${dir}${file} deleted.`, Colors.FgRed)
         }
       }
     }),
@@ -42,7 +44,7 @@ const deleteOldFiles = async (dir) => {
   * @returns {Promise} side effects of deleting files are carried out.
 */
 const copy = (src, dest) => {
-  console.log('[COPYING ASSET FILES]');
+  log('\n(Copying Asset Files)', Colors.FgMagenta);
   return copyRecursive(src, dest);
 }
 
@@ -59,7 +61,7 @@ const copyRecursive = async (src, dest) => {
   const stats = await fs.stat(src);
   const isDirectory = stats.isDirectory();
   if (!isDirectory) {
-    console.log(`${src} => ${dest}`);
+    log(`${src} copied.`, Colors.FgGreen);
     await fs.copyFile(src, dest);
   } else {
     await fs.mkdir(dest);
@@ -109,7 +111,7 @@ const getPosts = async (templateDir, markdownDir) => {
       try {
         openPost = await fs.readFile(`${markdownDir}${post}`, 'utf8');
       } catch (e) {
-        console.log(e);
+        log(e);
       }
       const postMetadata = getPostMetadata(openPost);
 
@@ -119,7 +121,7 @@ const getPosts = async (templateDir, markdownDir) => {
         .replace('${body}', converter.makeHtml(body))
         .replace('${pageTitle}', postMetadata.title)
         .replace('${title}', postMetadata.title)
-        .replace('${desc}', postMetadata.desc)
+        .replace('${description}', postMetadata.desc)
         .replace(
           '${date}',
           postMetadata.date.isValid() ? postMetadata.date.format('dddd, MMMM Do YYYY') : '[Invalid date]',
@@ -150,14 +152,14 @@ const getPosts = async (templateDir, markdownDir) => {
 */
 const getPostMetadata = (post) => {
   const lines = post.split('\n');
-  if (lines[0] !== '----' || lines[4] !== '----') {
+  if (lines[0] !== '----\r' || lines[4] !== '----\r') {
     throw Error('Incorrect post format.');
   }
 
   const tempDate = lines[1].split('date: ')[1];
 
   const title = lines[2].split('title: ')[1];
-  const desc = lines[3].split('desc: ')[1];
+  const desc = lines[3].split('description: ')[1];
   const date = moment(tempDate, 'DD/MM/YYYY HH:mm');
 
   return { date, title, desc };
@@ -183,7 +185,7 @@ const getPostBody = (post) => {
   * @returns {Promise} async    - side effects of generating the html files.
 */
 const generatePosts = async (posts, outputDir) => {
-  console.log('[GENERATING BLOG POSTS]');
+  log('\n(Generating Posts)', Colors.FgMagenta);
   await Promise.all(
     posts.map(async (post) => {
       try {
@@ -191,10 +193,11 @@ const generatePosts = async (posts, outputDir) => {
           `${outputDir}${post.details.name}.html`,
           minify(post.bodyHtml, minifyConfig),
         );
-        console.log(`${outputDir}${post.details.name}.html created.`);
+        log(`${outputDir}${post.details.name}.html created.`, Colors.FgGreen);
       } catch (e) {
-        console.log(
+        log(
           `Failed to create ${outputDir}${post.details.name}.html.`,
+          Colors.FgYellow
         );
       }
     }),
@@ -210,13 +213,13 @@ const generatePosts = async (posts, outputDir) => {
   * @returns {Promise} async    - side effects of generating the index file.
 */
 const generateIndex = async (posts, templateDir, outputDir) => {
-  console.log('[GENERATING INDEX PAGE]');
+  log('\n(Generating Index Page)', Colors.FgMagenta);
   const indexPostList = await buildPostList(posts, templateDir);
   const template = await fs.readFile(`${templateDir}index.html`, 'utf8');
   const hydratedTemplate = template.replace('${postList}', indexPostList);
   const minifiedPage = minify(hydratedTemplate, minifyConfig);
   await fs.writeFile(`${outputDir}index.html`, minifiedPage);
-  console.log(`${outputDir}index.html created.`);
+  log(`${outputDir}index.html created.`, Colors.FgGreen);
 }
 
 /**

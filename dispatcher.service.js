@@ -13,7 +13,7 @@ const {
   generateIndex,
   copy,
 } = require('./generator.service');
-const { console } = require('./logger.service');
+const { log, Colors } = require('./logger.service');
 
 
 const init = async (args) => {
@@ -34,8 +34,8 @@ const init = async (args) => {
     const action = parseArguments(tail);
     await evalArguments(action, config, methods);
   } catch (e) {
-    console.log(e);
-    console.log("Invalid usage. Try 'noted help' for more information.");
+    log(e);
+    log("Invalid usage. Try 'noted help' for more information.");
   }
 }
 
@@ -52,24 +52,24 @@ const list = async (args, config) => {
   const markdownFiles = await fs.readdir(config.markdownDir);
   const htmlFiles = await fs.readdir(config.outputDir);
 
-  console.log('[Markdown files]');
+  log('(Markdown files)', Colors.FgMagenta);
   markdownFiles.forEach((file) => {
     const ext = file.substring(file.length, file.length - 3);
     const name = file.substring(0, file.length - 3);
     if (ext === '.md') {
       if (htmlFiles.includes(`${name}.html`)) {
-        console.log(`${file} => ${name}.html`);
+        log(`${file} => ${name}.html`, Colors.FgGreen);
       } else {
-        console.log(`${file} => ???`);
+        log(`${file} => ???`, Colors.FgYellow);
       }
     }
   });
 
-  console.log('\n[HTML files]');
+  log('\n(HTML Files)', Colors.FgMagenta);
   htmlFiles.forEach((file) => {
     const ext = file.substring(file.length, file.length - 5);
     if (ext === '.html') {
-      console.log(file);
+      log(file);
     }
   });
 }
@@ -92,7 +92,7 @@ const build = async (args, { outputDir, templateDir, markdownDir }) => {
   // copy the asset files from the template directory
   await copy(`${templateDir}assets`, `${outputDir}assets`);
 
-  if (flag === '--open') await open(`${outputDir}index.html`);
+  log('\nSuccessly generated static site 🎉', Colors.Bright);
 }
 
 const add = async (args, config) => {
@@ -103,20 +103,20 @@ const add = async (args, config) => {
 
     try {
       await fs.rename(file, dest);
-      console.log(`${file} => ${dest}`);
-      console.log('Move complete.');
+      log(`${file} => ${dest}`);
+      log('Move complete.');
     } catch (e) {
-      console.log('Could not move file.');
-      console.log('ERROR ', e);
+      log('Could not move file.');
+      log('ERROR ', e);
     }
   } catch (e) {
-    console.log('ERROR ', e);
+    log('ERROR ', e);
   }
 }
 
 const help = async () => {
   const help = await fs.readFile(`${path.resolve(__dirname)}/help.txt`, 'utf8');
-  console.log(help);
+  log(help);
 }
 
 const parseArguments = (args) => {
