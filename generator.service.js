@@ -7,6 +7,7 @@ const path = require('path');
 
 const minifyConfig = require('./minifyConfig');
 const { log, Colors } = require('./logger.service');
+const { copyRecursive } = require('./misc.service');
 
 /**
   * Takes a path - deletes every file within said path.
@@ -48,33 +49,33 @@ const copy = (src, dest) => {
   return copyRecursive(src, dest);
 }
 
-/**
-  * Recursive function that copies the contents of one directory
-  * to another directory.
-  * @todo    Need to handle all the error cases that could possibly happen.
-  * @param   {string} src to folder we're moving
-  * @param   {string} dest to the destination the folder should be moved to.
-  *
-  * @returns {Promise} with side effects of moving a directory and it's contents.
-*/
-const copyRecursive = async (src, dest) => {
-  const stats = await fs.stat(src);
-  const isDirectory = stats.isDirectory();
-  if (!isDirectory) {
-    log(`${src} copied.`, Colors.FgGreen);
-    await fs.copyFile(src, dest);
-  } else {
-    await fs.mkdir(dest);
-    const files = await fs.readdir(src);
+// /**
+//   * Recursive function that copies the contents of one directory
+//   * to another directory.
+//   * @todo    Need to handle all the error cases that could possibly happen.
+//   * @param   {string} src to folder we're moving
+//   * @param   {string} dest to the destination the folder should be moved to.
+//   *
+//   * @returns {Promise} with side effects of moving a directory and it's contents.
+// */
+// const copyRecursive = async (src, dest) => {
+//   const stats = await fs.stat(src);
+//   const isDirectory = stats.isDirectory();
+//   if (!isDirectory) {
+//     log(`${src} copied.`, Colors.FgGreen);
+//     await fs.copyFile(src, dest);
+//   } else {
+//     await fs.mkdir(dest);
+//     const files = await fs.readdir(src);
 
-    await Promise.all(
-      files.map(async (childItemName) => copyRecursive(
-        path.join(src, childItemName),
-        path.join(dest, childItemName),
-      )),
-    );
-  }
-}
+//     await Promise.all(
+//       files.map(async (childItemName) => copyRecursive(
+//         path.join(src, childItemName),
+//         path.join(dest, childItemName),
+//       )),
+//     );
+//   }
+// }
 
 /**
   * Creates a list of blog post objects.
@@ -144,6 +145,10 @@ const getPosts = async (templateDir, markdownDir) => {
   return posts;
 }
 
+const stripLine = (line) => {
+  return line.replace(/(\r\n|\n|\r)/gm, '');
+}
+
 /**
   * Takes a markdown file and parses the first 5 lines for metadata.
   * @param   {string} post - a markdown file as a string
@@ -152,7 +157,7 @@ const getPosts = async (templateDir, markdownDir) => {
 */
 const getPostMetadata = (post) => {
   const lines = post.split('\n');
-  if (lines[0] !== '----\r' || lines[4] !== '----\r') {
+  if (stripLine(lines[0]) !== '----' || stripLine(lines[4]) !== '----') {
     throw Error('Incorrect post format.');
   }
 

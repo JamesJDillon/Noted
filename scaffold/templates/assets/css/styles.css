@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Palanquin+Dark&family=Roboto+Mono&display=swap');
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  color: #313131;
+}
+
+p, li, .post-date {
+  font-family: 'PT Sans', sans-serif;
+}
+
+p, li {
+  font-size: 17px;
+}
+
+body {
+
+}
+
+pre, code {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+}
+
+hr {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+header > h3 {
+  text-align: center;
+}
+
+header > h3 > a {
+  color: #615fdf;
+  font-size: 2.2rem;
+  font-weight: bolder;
+}
+
+header > h3 > small {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: black;
+  letter-spacing: 2px;
+  font-family: 'Palanquin Dark', sans-serif;
+}
+
+.container {
+  width: 65%;
+  margin: 0 auto;
+  padding-top: 35px;
+  border-top: solid;
+  max-width: 650px;
+  background-color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 40px;
+  margin-bottom: 35px;
+  border-width: 4px;
+}

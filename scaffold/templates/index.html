@@ -1,0 +1,63 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>The best blog.</title>
+  <meta name="description" content="My blog with my thoughts.">
+  <meta name="author" content="James Dillon">
+
+
+  <link rel="stylesheet" href="assets/css/defaults.css">
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet"> 
+
+  <style>
+    .post-title {
+      font-size: 2.1rem;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .post-title > a {
+      color: black;
+      font-family: 'Palanquin Dark', sans-serif;
+      text-decoration: underline;
+      text-decoration-color: #615fdf;
+      text-decoration-thickness: 2px;
+    }
+
+    .post-date {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      color: #797979;
+      font-style: italic;
+      letter-spacing: 0.4pt;
+    }
+
+    p {
+      margin-bottom: 20px;
+      color: #3e3e3e;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h3>
+      <a href="index.html" title="Home">ζ</a>
+      <small>Blog</small>
+    </h3>
+  </header>
+
+  <div class="container">
+    ${postList}
+  </div>
+</body>
+</html>

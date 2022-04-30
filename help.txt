@@ -2,6 +2,6 @@ Commands:
  - config          // Can be used to view/modify the config data. 
  - list            // Displays a list of markdown files and corresponding ouput.
  - build           // Generates the blog, overwriting old files.
- - add [file.md]   // Moves a markdown file into the markdown folder.
- - help            // Displays help information."
+ - help            // Displays help information.
  - open            // Opens the generated site in your browser.
+ - new <project>   // Generates a new project in the specified directory.

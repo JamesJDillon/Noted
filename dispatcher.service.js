@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs').promises;
+const oldFs = require('fs');
 const path = require('path');
 const open = require('open');
 const moment = require('moment');
@@ -17,22 +18,28 @@ const { log, Colors } = require('./logger.service');
 
 
 const init = async (args) => {
-  const config = await getConfig(`${path.resolve(__dirname)}/config.json`);
+  const config = await getConfig(`${process.cwd()}\\config.json`);
 
   const methods = {
     config: (args) => updateConfig(args, config),
-    list: (args) => list(args, config),
-    build: (args) => build(args, config),
-    add: (args) => add(args, config),
-    help: (args) => help(args, config),
+    list:   (args) => list(args, config),
+    build:  (args) => build(args, config),
+    help:   (args) => help(args, config),
     create: (args) => create(args, config),
-    open: (args) => openBrowser(args, config),
+    open:   (args) => openBrowser(args, config),
+    new:    (args) => newSite(args, config),
   };
 
   const [first, second, ...tail] = args;
   try {
     const action = parseArguments(tail);
-    await evalArguments(action, config, methods);
+
+    // TODO: Find a cleaner way of expressing this.
+    if (Object.keys(config).length === 0 && (action.action !== 'new' && action.action !== 'help')) {
+      log("Error: config.json missing - are you sure you're in the right directory?");
+    } else {
+      await evalArguments(action, config, methods);
+    }
   } catch (e) {
     log(e);
     log("Invalid usage. Try 'noted help' for more information.");
@@ -45,6 +52,7 @@ const openBrowser = async (args, { outputDir }) => {
 
 const updateConfig = async (args, config) => {
   const newConfig = await getConfigValues(config);
+  console.log(newConfig);
   await fs.writeFile(`${path.resolve(__dirname)}/config.json`, JSON.stringify(newConfig));
 }
 
@@ -92,26 +100,7 @@ const build = async (args, { outputDir, templateDir, markdownDir }) => {
   // copy the asset files from the template directory
   await copy(`${templateDir}assets`, `${outputDir}assets`);
 
-  log('\nSuccessly generated static site 🎉', Colors.Bright);
-}
-
-const add = async (args, config) => {
-  try {
-    const [file] = args;
-    const fileName = path.basename(file);
-    const dest = path.join(config.markdownDir, fileName);
-
-    try {
-      await fs.rename(file, dest);
-      log(`${file} => ${dest}`);
-      log('Move complete.');
-    } catch (e) {
-      log('Could not move file.');
-      log('ERROR ', e);
-    }
-  } catch (e) {
-    log('ERROR ', e);
-  }
+  log('\nSuccessfully generated static site 🎉', Colors.Bright);
 }
 
 const help = async () => {
@@ -145,6 +134,34 @@ const create = async (args, config) => {
     file,
     postTemplate.replace('{date}', moment().format('DD/MM/YYYY HH:mm')),
   );
+}
+
+const newSite = async (args, config) => {
+  const [folderName] = args;
+  if (folderName === undefined) throw Error('Project name required.');
+  
+  const scaffoldFolder = `${path.resolve(__dirname)}\\scaffold`;
+  const folderDir = `${process.cwd()}\\${folderName}`;
+
+  if (oldFs.existsSync(folderDir)) {
+    throw Error(`Folder ${folderName} already exists.`);
+  }
+
+  await fs.mkdir(folderDir);
+  await fs.mkdir(`${folderDir}\\output`);
+
+  await copy(`${scaffoldFolder}\\markdown`, `${folderDir}\\markdown`);
+  await copy(`${scaffoldFolder}\\templates`, `${folderDir}\\templates`);
+
+  await fs.writeFile(`${folderDir}\\config.json`, JSON.stringify({
+    templateDir: `${folderDir}\\templates\\`,
+    outputDir: `${folderDir}\\output\\`,
+    markdownDir: `${folderDir}\\markdown\\`
+  }));
+
+  log('\nNew project created 🎉', Colors.Bright);
+  log('\nTo get started, try:', Colors.Bright);
+  log(`\n\tcd ${folderName} && noted build && noted open`, Colors.Bright);
 }
 
 module.exports = init;

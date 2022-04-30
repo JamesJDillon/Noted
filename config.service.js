@@ -18,7 +18,6 @@ const getConfig = async (path) => {
 
     return isValid ? config : {};
   } catch (e) {
-    log(e);
     return {};
   }
 }
