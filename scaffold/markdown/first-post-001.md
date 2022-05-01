@@ -1,7 +1,7 @@
 ----
 date: 11/04/2021 00:02
 title: Example Blog Post
-description: This is just an example for the sake of it.
+description: An example blog post.
 ----
 
 # Velint cur nunc ut filia
