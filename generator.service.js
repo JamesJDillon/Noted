@@ -101,6 +101,7 @@ const copy = (src, dest) => {
   */
 const getPosts = async (templateDir, markdownDir) => {
   const converter = new showdown.Converter();
+  converter.setOption("tables", true);
   // TODO: Handle exception.
   const postFiles = await fs.readdir(markdownDir);
   const template = await fs.readFile(`${templateDir}post.html`, 'utf8');
